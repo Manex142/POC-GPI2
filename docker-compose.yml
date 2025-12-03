@@ -1,0 +1,63 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: poc-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agprueba
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  authorization-server:
+    build: ./authorization-server
+    container_name: poc-auth-server
+    ports:
+      - "9000:9000"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/agprueba?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-89387125120-8evcs88o8g0kk6pfnv41p7iiggofk2n3.apps.googleusercontent.com}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-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}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/.well-known/openid-configuration"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+  resource-server:
+    build: ./resource-server
+    container_name: poc-resource-server
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/agprueba?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://authorization-server:9000
+    depends_on:
+      authorization-server:
+        condition: service_healthy
+
+  frontend:
+    build: ./ag-prueba-front
+    container_name: poc-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - resource-server
+
+volumes:
+  mysql_data:

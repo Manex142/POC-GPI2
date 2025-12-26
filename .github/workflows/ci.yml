@@ -25,7 +25,11 @@ jobs:
     # Ejecutar tests y generar Jacoco en cada carpeta
     - name: Java Build & Test with Coverage
       run: |
-        mvn -B clean verify -pl authorization-server,resource-server -am
+        # Ejecutar en el servidor de autorización
+        cd authorization-server && mvn -B clean verify
+        cd ..
+        # Ejecutar en el servidor de recursos
+        cd resource-server && mvn -B clean verify
 
     # PARTE ANGULAR
     - name: Set up Node.js
@@ -51,4 +55,6 @@ jobs:
           -Dsonar.projectKey=Manex142_POC-GPI2 \
           -Dsonar.organization=manex142 \
           -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.java.binaries=target/classes
+          -Dsonar.sources=authorization-server/src/main/java,resource-server/src/main/java \
+          -Dsonar.java.binaries=authorization-server/target/classes,resource-server/target/classes \
+          -Dsonar.coverage.jacoco.xmlReportPaths=authorization-server/target/site/jacoco/jacoco.xml,resource-server/target/site/jacoco/jacoco.xml

@@ -52,6 +52,14 @@ jobs:
           -Dsonar.organization=manex142 \
           -Dsonar.host.url=https://sonarcloud.io
 
+    - name: Run Backend in Background
+      run: |
+        # Usamos & para que se ejecute en segundo plano y no bloquee el CI
+        mvn spring-boot:run -pl authorization-server & 
+        
+        # Esperar a que el puerto 8080 esté abierto (max 60 seg)
+        timeout 60s bash -c 'until curl -s localhost:8080; do sleep 5; done'
+
     - name: OWASP ZAP Baseline Scan
       uses: zaproxy/action-baseline@v0.12.0
       with:

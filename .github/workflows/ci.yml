@@ -55,13 +55,18 @@ jobs:
           -Dsonar.java.binaries=authorization-server/target/classes,resource-server/target/classes \
           -Dsonar.coverage.jacoco.xmlReportPaths=authorization-server/target/site/jacoco/jacoco.xml,resource-server/target/site/jacoco/jacoco.xml
 
-    - name: Scan Docker Image (Trivy)
+    - name: Build and Tag Image
+      run: |
+        # Construimos la imagen del Auth Server manualmente para asegurar el nombre
+        docker build -t auth-server-scan:latest ./authorization-server
+
+    - name: Scan Backend Image (Trivy)
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'poc-auth-server:latest'
+        image-ref: 'auth-server-scan:latest'
         format: 'table'
-        exit-code: '0' 
         severity: 'CRITICAL,HIGH'
+        exit-code: '0'
 
   publish:
     needs: build-and-test

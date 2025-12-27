@@ -51,21 +51,21 @@ jobs:
           -Dsonar.projectKey=Manex142_POC-GPI2 \
           -Dsonar.organization=manex142 \
           -Dsonar.host.url=https://sonarcloud.io
-
-    - name: Run Backend in Background
+    - name: Deploy Environment with Docker Compose
       run: |
-        # Usamos & para que se ejecute en segundo plano y no bloquee el CI
-        mvn spring-boot:run -pl authorization-server & 
+        # Levantamos todo en segundo plano
+        docker-compose up -d
         
-        # Esperar a que el puerto 8080 esté abierto (max 60 seg)
-        timeout 60s bash -c 'until curl -s localhost:8080; do sleep 5; done'
+        # Esperamos a que el Resource Server (puerto 8080) esté listo
+        # Usamos el healthcheck de docker o un curl simple
+        timeout 120s bash -c 'until curl -s http://localhost:8080; do echo "Esperando a la app..."; sleep 10; done'
 
     - name: OWASP ZAP Baseline Scan
       uses: zaproxy/action-baseline@v0.12.0
       with:
         target: 'http://localhost:8080'
-        fail_action: false # Para que el build no muera si encuentra un aviso menor
-
+        fail_action: false 
+        
   publish:
     needs: build-and-test
     if: startsWith(github.ref, 'refs/tags/v')

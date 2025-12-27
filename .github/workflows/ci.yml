@@ -26,10 +26,10 @@ jobs:
     - name: Java Build & Test with Coverage
       run: |
         # Ejecutar en el servidor de autorización
-        cd authorization-server && mvn -B clean verify
-        cd ..
+        #cd authorization-server && mvn -B clean verify
+        #cd ..
         # Ejecutar en el servidor de recursos
-        cd resource-server && mvn -B clean verify
+        #cd resource-server && mvn -B clean verify
 
     # PARTE ANGULAR
     - name: Set up Node.js

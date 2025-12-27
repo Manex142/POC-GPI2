@@ -59,6 +59,14 @@ jobs:
           -Dsonar.java.binaries=authorization-server/target/classes,resource-server/target/classes \
           -Dsonar.coverage.jacoco.xmlReportPaths=authorization-server/target/site/jacoco/jacoco.xml,resource-server/target/site/jacoco/jacoco.xml
 
+    - name: Scan Docker Image (Trivy)
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'poc-auth-server:latest'
+        format: 'table'
+        exit-code: '0' 
+        severity: 'CRITICAL,HIGH'
+
   publish:
     needs: build-and-test
     if: startsWith(github.ref, 'refs/tags/v')

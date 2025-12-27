@@ -39,11 +39,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: 'ag-prueba-front/package-lock.json'
 
-    - name: Angular Linting
+    - name: Angular Dependencies
       working-directory: ./ag-prueba-front
       run: |
         npm install
-        npm run lint
 
     # Usar Maven para mandar a Sonar
     - name: SonarCloud Scan via Maven

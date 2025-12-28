@@ -85,6 +85,7 @@ public class AuthorizationSecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/auth/**", "/client/**", "/login").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin(login -> login.loginPage("/login"))

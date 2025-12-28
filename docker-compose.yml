@@ -25,13 +25,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/agprueba?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+      ISSUER_URI: http://authorization-server:9000
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-89387125120-8evcs88o8g0kk6pfnv41p7iiggofk2n3.apps.googleusercontent.com}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-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}
     depends_on:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/.well-known/openid-configuration"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -50,6 +51,12 @@ services:
     depends_on:
       authorization-server:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
   frontend:
     build: ./ag-prueba-front

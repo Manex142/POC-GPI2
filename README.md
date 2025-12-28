@@ -1,3 +1,9 @@
+# POC-GPI2 🚀
+
+![Build Status](https://github.com/Manex142/POC-GPI2/actions/workflows/ci.yml/badge.svg)
+![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=Manex142_POC-GPI2&metric=alert_status)
+![SonarCloud Coverage](https://sonarcloud.io/api/project_badges/measure?project=Manex142_POC-GPI2&metric=coverage)
+
 
 # Proyecto de Prueba OAuth2 con Spring Boot, Angular y Google Sign-In
 
